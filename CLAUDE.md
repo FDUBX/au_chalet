@@ -126,13 +126,14 @@ clair (page d'impression des étiquettes). Les rubriques utilisent les classes `
 ### Pages CMS
 1. Se connecter sur https://app.pagescms.org avec GitHub, installer la GitHub App sur `FDUBX/au_chalet`.
 2. Inviter les membres de la famille comme **collaborateurs** (email, sans compte GitHub).
-3. À tester en premier : upload d'une photo → la fiche doit contenir `../../assets/photos/<nom>.jpg`
-   et le build doit passer. Si Pages CMS ne gère pas le chemin relatif en prévisualisation,
-   envisager un alias (`src/assets` → import absolu) et adapter `media.output`.
+3. Validé : un upload écrit `../../assets/photos/<nom-aléatoire>.<ext>` dans la fiche, l'aperçu
+   CMS et le build fonctionnent. Ne pas modifier `media.output` sans retester ce point.
 
 ## Backlog
 
-- [ ] Tester le CMS de bout en bout (création de fiche, photo, liste d'étapes).
+- [x] Tester le CMS de bout en bout (création de fiche, photo, liste d'étapes) — validé le 2026-10-17 :
+      chemins `../../assets/photos/<random>.<ext>` corrects, build OK.
+- [ ] Nettoyer les photos orphelines (supprimer une fiche dans le CMS ne supprime pas ses photos).
 - [ ] Champ `icone` facultatif par fiche (ex. télé ≠ icône Wi-Fi de la rubrique Réseau).
 - [ ] Page procédure « version enfants » (texte agrandi, une étape par écran).
 - [ ] PWA / hors-ligne (manifest + service worker) pour consultation sans réseau.
