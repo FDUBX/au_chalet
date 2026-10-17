@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import ProcedureRow from '../../components/ProcedureRow.astro';
+import { RUBRIQUE_SLUGS, RUBRIQUES, type RubriqueSlug } from '../../data/rubriques';
+import { getProcedures, inRubrique, plural } from '../../lib/procedures';
+
+export function getStaticPaths() {
+  return RUBRIQUE_SLUGS.map((slug) => ({ params: { slug } }));
+}
+
+const slug = Astro.params.slug as RubriqueSlug;
+const r = RUBRIQUES[slug];
+const list = inRubrique(await getProcedures(), slug);
+---
+
+<Base title={r.label}>
+  <SiteHeader title={r.label} sub={`${r.sub} · ${plural(list.length, 'fiche', 'fiches')}`} back={{ href: '/', label: 'Accueil' }} />
+
+  <main class="page">
+    <div class="wrap stack">
+      {
+        list.length ? (
+          <ul class="rows">
+            {list.map((p) => (
+              <ProcedureRow procedure={p} hideRubrique />
+            ))}
+          </ul>
+        ) : (
+          <p class="empty">Pas encore de fiche dans cette rubrique.</p>
+        )
+      }
+    </div>
+  </main>
+</Base>

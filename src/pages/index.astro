@@ -1,0 +1,163 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Icon from '../components/Icon.astro';
+import ProcedureRow from '../components/ProcedureRow.astro';
+import { SITE } from '../data/site';
+import { GRID_RUBRIQUES, RUBRIQUES } from '../data/rubriques';
+import { getProcedures, byRecent, inRubrique, procedureUrl, rubriqueUrl, plural } from '../lib/procedures';
+
+const all = await getProcedures();
+const recent = byRecent(all).slice(0, 5);
+
+// Index de recherche côté client (titre + rubrique + appareil + matériel + étapes).
+const searchIndex = all.map((p) => ({
+  t: p.data.titre,
+  m: [RUBRIQUES[p.data.categorie].label, p.data.duree].filter(Boolean).join(' · '),
+  u: procedureUrl(p),
+  k: [
+    p.data.titre,
+    RUBRIQUES[p.data.categorie].label,
+    p.data.appareil ?? '',
+    ...p.data.materiel,
+    ...p.data.etapes.map((e) => e.texte),
+  ].join(' '),
+}));
+---
+
+<Base>
+  <script is:inline>
+    // Une tablette restée en mode enfants rouvre directement la vue enfants.
+    try {
+      if (localStorage.getItem('au-chalet:enfants') === '1') location.replace('/enfants/');
+    } catch (e) {}
+  </script>
+
+  <SiteHeader title={SITE.tagline} />
+
+  <main class="page">
+    <div class="wrap stack">
+      <label class="search">
+        <Icon name="search" size={20} stroke={2.2} />
+        <span class="sr-only">Chercher une procédure</span>
+        <input id="q" type="search" placeholder="Que veux-tu faire ?" autocomplete="off" enterkeyhint="search" />
+      </label>
+
+      <section id="results" class="stack-sm" aria-live="polite" hidden>
+        <h2 class="h2" id="results-title">Résultats</h2>
+        <ul class="rows" id="results-list"></ul>
+        <p class="empty" id="results-empty" hidden>Aucune fiche ne correspond. Essaie un autre mot.</p>
+      </section>
+
+      <div class="stack" id="home-content">
+        <div class="toggle-card">
+          <span class="toggle-text">
+            <span class="toggle-title">Mode enfants</span>
+            <span class="toggle-sub">Plus d’images, moins de texte</span>
+          </span>
+          <button class="switch" type="button" aria-pressed="false" data-kids-toggle="on" aria-label="Activer le mode enfants">
+            <span></span>
+          </button>
+        </div>
+
+        <a class="urgent" href={rubriqueUrl('urgences')}>
+          <span class="urgent-badge"><Icon name="alert" size={24} stroke={2.2} /></span>
+          <span class="urgent-text">
+            <span class="urgent-title">Urgences</span>
+            <span class="urgent-sub">{RUBRIQUES.urgences.sub}</span>
+          </span>
+          <Icon name="chevron" size={22} stroke={2.2} />
+        </a>
+
+        <section class="stack-sm" aria-labelledby="rubriques-title">
+          <h2 class="h2" id="rubriques-title">Rubriques</h2>
+          <div class="grid-2">
+            {
+              GRID_RUBRIQUES.map((r) => (
+                <a class:list={['cat-card', `tone-${r.tone}`]} href={rubriqueUrl(r.slug)}>
+                  <span class="badge">
+                    <Icon name={r.icon} size={24} />
+                  </span>
+                  <span class="cat-text">
+                    <span class="cat-name">{r.label}</span>
+                    <span class="cat-sub">{plural(inRubrique(all, r.slug).length, 'fiche', 'fiches')}</span>
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </section>
+
+        <section class="stack-sm" aria-labelledby="recent-title">
+          <h2 class="h2" id="recent-title">Ajoutées récemment</h2>
+          {
+            recent.length ? (
+              <ul class="rows">
+                {recent.map((p) => (
+                  <ProcedureRow procedure={p} />
+                ))}
+              </ul>
+            ) : (
+              <p class="empty">Aucune fiche pour l’instant.</p>
+            )
+          }
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script type="application/json" id="search-data" set:html={JSON.stringify(searchIndex).replace(/</g, '\\u003c')} />
+</Base>
+
+<script>
+  import { initKidsToggle } from '../scripts/kids';
+  initKidsToggle();
+
+  type Entry = { t: string; m: string; u: string; k: string };
+  const norm = (s: string) =>
+    s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+  const data: (Entry & { n: string })[] = JSON.parse(
+    document.getElementById('search-data')?.textContent ?? '[]',
+  ).map((e: Entry) => ({ ...e, n: norm(e.k) }));
+
+  const input = document.getElementById('q') as HTMLInputElement;
+  const results = document.getElementById('results')!;
+  const list = document.getElementById('results-list')!;
+  const empty = document.getElementById('results-empty')!;
+  const home = document.getElementById('home-content')!;
+
+  const render = () => {
+    const terms = norm(input.value.trim()).split(/\s+/).filter((w) => w.length > 1);
+    const searching = terms.length > 0;
+    results.hidden = !searching;
+    home.hidden = searching;
+    if (!searching) return;
+
+    const hits = data.filter((e) => terms.every((w) => e.n.includes(w)));
+    list.replaceChildren(
+      ...hits.map((e) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.className = 'row tone-sapin';
+        a.href = e.u;
+        const text = document.createElement('span');
+        text.className = 'row-text';
+        const title = document.createElement('span');
+        title.className = 'row-title';
+        title.textContent = e.t;
+        const meta = document.createElement('span');
+        meta.className = 'row-meta';
+        meta.textContent = e.m;
+        text.append(title, meta);
+        a.append(text);
+        li.append(a);
+        return li;
+      }),
+    );
+    empty.hidden = hits.length > 0;
+  };
+
+  input.addEventListener('input', render);
+  render();
+</script>

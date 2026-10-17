@@ -1,0 +1,36 @@
+---
+import Icon from './Icon.astro';
+import Media from './Media.astro';
+import { procedureUrl, rubriqueOf, type Procedure } from '../lib/procedures';
+
+interface Props {
+  procedure: Procedure;
+  /** Masquer le nom de la rubrique (déjà dans le titre de la page). */
+  hideRubrique?: boolean;
+}
+
+const { procedure: p, hideRubrique = false } = Astro.props;
+const r = rubriqueOf(p);
+const meta = [hideRubrique ? null : r.label, p.data.duree].filter(Boolean).join(' · ');
+---
+
+<li>
+  <a class:list={['row', `tone-${r.tone}`]} href={procedureUrl(p)}>
+    <span class="thumb">
+      <Media src={p.data.photo_principale} icon={r.icon} widths={[120]} sizes="54px" />
+    </span>
+    <span class="row-text">
+      <span class="row-title">{p.data.titre}</span>
+      <span class="row-meta">
+        {meta}
+        {p.data.public === 'adultes' && (
+          <>
+            {meta && ' · '}
+            <Icon name="lock" size={13} stroke={2.4} /> Adultes
+          </>
+        )}
+      </span>
+    </span>
+    <Icon name="chevron" size={20} stroke={2.2} class="chev" />
+  </a>
+</li>

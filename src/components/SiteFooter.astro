@@ -1,0 +1,17 @@
+---
+import Icon from './Icon.astro';
+import { SITE } from '../data/site';
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <a class="link-subtle" href={SITE.cmsUrl} rel="noopener">
+      <Icon name="pencil" size={16} />
+      Ajouter ou modifier une fiche
+    </a>
+    <a class="link-subtle" href="/etiquettes/">
+      <Icon name="printer" size={16} />
+      Étiquettes QR
+    </a>
+  </div>
+</footer>

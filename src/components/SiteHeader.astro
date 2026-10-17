@@ -1,0 +1,35 @@
+---
+import Icon from './Icon.astro';
+import Mountains from './Mountains.astro';
+import { SITE } from '../data/site';
+
+interface Props {
+  title: string;
+  sub?: string;
+  /** En-tête réduit avec lien retour (pages intérieures). */
+  back?: { href: string; label: string };
+}
+
+const { title, sub, back } = Astro.props;
+---
+
+<header class:list={['site-header', { 'site-header--compact': back }]}>
+  <div class="wrap">
+    {
+      back ? (
+        <a class="back-link" href={back.href}>
+          <Icon name="arrowLeft" size={20} stroke={2.2} />
+          {back.label}
+        </a>
+      ) : (
+        <a class="kicker" href="/">
+          <Icon name="home" size={18} />
+          {SITE.name}
+        </a>
+      )
+    }
+    <h1 class="site-title" set:html={title} />
+    {sub && <p class="site-sub">{sub}</p>}
+  </div>
+  <Mountains />
+</header>

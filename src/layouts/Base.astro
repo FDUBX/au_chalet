@@ -1,0 +1,35 @@
+---
+import '@fontsource-variable/nunito';
+import '../styles/global.css';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../data/site';
+
+interface Props {
+  title?: string;
+  /** Force le thème clair (ex. page d'impression). */
+  forceLight?: boolean;
+  footer?: boolean;
+}
+
+const { title, forceLight = false, footer = true } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} — ${SITE.tagline}`;
+---
+
+<!doctype html>
+<html lang="fr" class:list={{ 'theme-light': forceLight }}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#23453A" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={forceLight ? '#23453A' : '#0E1613'} media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-title" content={SITE.name} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{fullTitle}</title>
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+    {footer && <SiteFooter />}
+  </body>
+</html>

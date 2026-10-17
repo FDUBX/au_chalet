@@ -1,0 +1,171 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Media from '../../components/Media.astro';
+import { getProcedures, rubriqueOf, rubriqueUrl, type Procedure } from '../../lib/procedures';
+
+export async function getStaticPaths() {
+  const all = await getProcedures();
+  return all.map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+
+interface Props {
+  p: Procedure;
+}
+
+const { p } = Astro.props;
+const d = p.data;
+const r = rubriqueOf(p);
+const { Content } = await render(p);
+const hasNotes = Boolean(p.body?.trim());
+---
+
+<Base title={d.titre}>
+  <div class:list={['hero-wrap', `tone-${r.tone}`]}>
+    <figure class="hero">
+      <a class="hero-back" href={rubriqueUrl(r.slug)} aria-label={`Retour à la rubrique ${r.label}`}>
+        <Icon name="arrowLeft" size={22} stroke={2.2} />
+      </a>
+      <Media
+        src={d.photo_principale}
+        alt={d.appareil ?? d.titre}
+        icon={r.icon}
+        iconSize={60}
+        label="Photo à ajouter"
+        widths={[600, 1200]}
+        sizes="(max-width: 600px) 100vw, 600px"
+        loading="eager"
+      />
+      <a class="hero-chip" href={rubriqueUrl(r.slug)}>{r.label}</a>
+    </figure>
+  </div>
+
+  <main class="page">
+    <div class="wrap stack" style="padding-top: 16px">
+      <header class="stack-sm">
+        <h1 class="proc-title">{d.titre}</h1>
+        {d.appareil && <p class="lede">{d.appareil}</p>}
+        <div class="pills">
+          {
+            d.duree && (
+              <span class="pill">
+                <Icon name="clock" size={16} stroke={2.2} />
+                {d.duree}
+              </span>
+            )
+          }
+          {
+            d.public === 'adultes' ? (
+              <span class="pill pill--adult">
+                <Icon name="lock" size={16} stroke={2.2} />
+                Adultes uniquement
+              </span>
+            ) : (
+              <span class="pill">
+                <Icon name="users" size={16} stroke={2.2} />
+                Tout le monde
+              </span>
+            )
+          }
+        </div>
+      </header>
+
+      {
+        d.materiel.length > 0 && (
+          <section class="card" aria-labelledby="materiel-title">
+            <h2 class="card-title" id="materiel-title">Ce qu’il faut</h2>
+            <ul class="checklist">
+              {d.materiel.map((m) => (
+                <li>
+                  <span class="check">
+                    <Icon name="check" size={14} stroke={3} />
+                  </span>
+                  {m}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        d.avertissements.length > 0 && (
+          <aside class="warn" aria-label="Attention">
+            <span class="warn-badge">
+              <Icon name="alert" size={20} stroke={2.2} />
+            </span>
+            <div class="warn-body">
+              <strong>Attention</strong>
+              {d.avertissements.length === 1 ? (
+                <p>{d.avertissements[0]}</p>
+              ) : (
+                <ul>
+                  {d.avertissements.map((a) => (
+                    <li>{a}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </aside>
+        )
+      }
+
+      <section class="stack-sm" aria-labelledby="etapes-title">
+        <h2 class="h2" id="etapes-title">Étape par étape</h2>
+        <p class="steps-hint">Touche le numéro d’une étape pour la cocher.</p>
+        <ol class="steps">
+          {
+            d.etapes.map((e, i) => (
+              <li class="step" data-step>
+                <div class="step-head">
+                  <button class="step-num" type="button" aria-pressed="false" aria-label={`Étape ${i + 1} : marquer comme faite`}>
+                    <span class="num-label">{i + 1}</span>
+                    <Icon name="check" size={18} stroke={3} class="num-check" />
+                  </button>
+                  <p class="step-text">{e.texte}</p>
+                </div>
+                {e.photo && (
+                  <div class="step-photo">
+                    <Media src={e.photo} alt={`Étape ${i + 1}`} icon={r.icon} />
+                  </div>
+                )}
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      {
+        hasNotes && (
+          <section class="card" aria-labelledby="notes-title">
+            <h2 class="card-title" id="notes-title">Bon à savoir</h2>
+            <div class="prose">
+              <Content />
+            </div>
+          </section>
+        )
+      }
+
+      <a class="btn" href={rubriqueUrl(r.slug)}>
+        <Icon name="check" size={20} stroke={2.6} />
+        C’est fait !
+      </a>
+
+      <a class="link-subtle" href={`/etiquettes/?p=${p.id}`} style="align-self: center">
+        <Icon name="printer" size={16} />
+        Imprimer l’étiquette QR de cette fiche
+      </a>
+    </div>
+  </main>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-step]').forEach((step) => {
+    const btn = step.querySelector<HTMLButtonElement>('.step-num');
+    btn?.addEventListener('click', () => {
+      const done = step.classList.toggle('is-done');
+      btn.setAttribute('aria-pressed', String(done));
+    });
+  });
+</script>

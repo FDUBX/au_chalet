@@ -1,0 +1,146 @@
+---
+/**
+ * Planche d'étiquettes QR à imprimer (A4, 4 étiquettes 85 × 115 mm par page).
+ * /etiquettes/?p=<id> n'affiche que l'étiquette de cette fiche.
+ */
+import QRCode from 'qrcode';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { getProcedures, procedureUrl, rubriqueOf } from '../lib/procedures';
+
+const site = Astro.site ?? new URL('https://maison.example.com');
+const all = await getProcedures();
+
+const labels = await Promise.all(
+  all.map(async (p) => {
+    const url = new URL(procedureUrl(p), site).href;
+    const svg = await QRCode.toString(url, {
+      type: 'svg',
+      margin: 0,
+      errorCorrectionLevel: 'M',
+      color: { dark: '#23292e', light: '#ffffff' },
+    });
+    return {
+      id: p.id,
+      titre: p.data.titre,
+      r: rubriqueOf(p),
+      short: `${site.host}${procedureUrl(p).replace(/\/$/, '')}`,
+      svg,
+    };
+  }),
+);
+---
+
+<Base title="Étiquettes QR" forceLight footer={false}>
+  <main class="sheet-page">
+    <div class="toolbar no-print">
+      <a class="link-subtle" href="/">
+        <Icon name="arrowLeft" size={18} stroke={2.2} />
+        Accueil
+      </a>
+      <p class="toolbar-info" id="count">{labels.length} étiquette{labels.length > 1 ? 's' : ''}</p>
+      <a class="link-subtle" href="/etiquettes/" id="show-all" hidden>Tout afficher</a>
+      <button class="btn" type="button" id="print">
+        <Icon name="printer" size={20} stroke={2.2} />
+        Imprimer
+      </button>
+    </div>
+
+    <div class="sheet">
+      {
+        labels.map((l) => (
+          <article class:list={['label', `tone-${l.r.tone}`]} data-id={l.id}>
+            <div class="label-band">
+              <span class="label-brand">
+                <Icon name="home" size={16} stroke={2.2} />
+                Au chalet
+              </span>
+              <span class="label-badge">
+                <Icon name={l.r.icon} size={20} />
+              </span>
+            </div>
+            <div class="label-body">
+              <h2 class="label-title">{l.titre}</h2>
+              <div class="label-qr" set:html={l.svg} />
+              <p class="label-cta">
+                <Icon name="smartphone" size={16} stroke={2.2} />
+                Scanne-moi avec un téléphone
+              </p>
+              <p class="label-url">{l.short}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </main>
+</Base>
+
+<style>
+  .sheet-page { padding: 20px; }
+  .toolbar {
+    max-width: 900px; margin: 0 auto 20px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+  }
+  .toolbar-info { margin: 0 auto 0 0; font-weight: 700; color: var(--muted); }
+  .toolbar .btn { min-height: 48px; font-size: 15px; }
+
+  .sheet {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(85mm, 1fr)); gap: 8mm;
+    justify-items: center;
+  }
+  .label {
+    width: 85mm; height: 115mm;
+    display: flex; flex-direction: column;
+    background: #fff; border: 0.5mm solid var(--line); border-radius: 6mm; overflow: hidden;
+    break-inside: avoid;
+  }
+  .label-band {
+    height: 16mm; flex-shrink: 0; padding: 0 5mm;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--accent); color: #f4efe7;
+  }
+  .label-brand {
+    display: flex; align-items: center; gap: 2mm;
+    font-size: 11pt; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .label-badge {
+    width: 10mm; height: 10mm; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--tone-bg); color: var(--tone-fg);
+  }
+  .label-body {
+    flex: 1; padding: 4mm 5mm 5mm;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 3mm;
+    text-align: center;
+  }
+  .label-title { margin: 0; font-size: 15pt; line-height: 1.15; font-weight: 900; }
+  .label-qr { width: 44mm; height: 44mm; }
+  .label-qr :global(svg) { width: 100%; height: 100%; }
+  .label-cta { margin: 0; display: flex; align-items: center; gap: 2mm; font-size: 11pt; font-weight: 900; }
+  .label-url { margin: 0; font-size: 8.5pt; font-weight: 700; color: var(--muted); word-break: break-all; }
+
+  @media print {
+    @page { size: A4; margin: 10mm; }
+    .no-print { display: none !important; }
+    .sheet-page { padding: 0; }
+    .sheet { max-width: none; grid-template-columns: repeat(2, 85mm); justify-content: center; gap: 6mm 10mm; }
+    .label { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+
+<script>
+  const id = new URLSearchParams(location.search).get('p');
+  if (id) {
+    let n = 0;
+    document.querySelectorAll<HTMLElement>('.label').forEach((el) => {
+      const keep = el.dataset.id === id;
+      el.hidden = !keep;
+      if (keep) n++;
+    });
+    const count = document.getElementById('count');
+    if (count) count.textContent = `${n} étiquette`;
+    document.getElementById('show-all')?.removeAttribute('hidden');
+  }
+  document.getElementById('print')?.addEventListener('click', () => window.print());
+</script>

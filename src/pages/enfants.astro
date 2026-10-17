@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Icon from '../components/Icon.astro';
+import Media from '../components/Media.astro';
+import { SITE } from '../data/site';
+import { getProcedures, forKids, procedureUrl, rubriqueOf, plural } from '../lib/procedures';
+
+const missions = forKids(await getProcedures());
+---
+
+<Base title="Mode enfants">
+  <SiteHeader title="Salut !<br>On fait quoi ?" />
+
+  <main class="page">
+    <div class="wrap stack">
+      <div class="toggle-card is-on">
+        <span class="toggle-text">
+          <span class="toggle-title">Mode enfants</span>
+          <span class="toggle-sub">Activé</span>
+        </span>
+        <button class="switch" type="button" aria-pressed="true" data-kids-toggle="off" aria-label="Quitter le mode enfants">
+          <span></span>
+        </button>
+      </div>
+
+      <section class="help" aria-labelledby="help-title">
+        <div class="help-head" id="help-title">
+          <span class="urgent-badge" style="width: 48px; height: 48px">
+            <Icon name="alert" size={24} stroke={2.2} />
+          </span>
+          <span>Un souci ?<br />Va voir un adulte.</span>
+        </div>
+        <a class="btn btn--danger" href={`tel:${SITE.emergencyNumber}`}>
+          <Icon name="phone" size={22} stroke={2.2} />
+          Urgence : appeler le {SITE.emergencyNumber}
+        </a>
+      </section>
+
+      <section class="stack-sm" aria-labelledby="missions-title">
+        <h2 class="h2" id="missions-title" style="font-size: 24px">Mes missions</h2>
+        {
+          missions.length ? (
+            <div class="grid-2">
+              {missions.map((p) => {
+                const r = rubriqueOf(p);
+                return (
+                  <a class:list={['kids-tile', `tone-${r.tone}`]} href={procedureUrl(p)}>
+                    <span class="kids-media">
+                      <Media src={p.data.photo_principale} icon={r.icon} iconSize={52} widths={[300, 600]} sizes="(max-width: 600px) 45vw, 260px" />
+                    </span>
+                    <span class="kids-title">{p.data.titre}</span>
+                    <span class="kids-count">{plural(p.data.etapes.length, 'étape', 'étapes')}</span>
+                  </a>
+                );
+              })}
+            </div>
+          ) : (
+            <p class="empty">Pas encore de mission.</p>
+          )
+        }
+      </section>
+    </div>
+  </main>
+</Base>
+
+<script>
+  import { initKidsToggle } from '../scripts/kids';
+  initKidsToggle();
+</script>

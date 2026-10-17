@@ -1,0 +1,119 @@
+# Configuration Pages CMS — https://pagescms.org/docs/
+# Les rubriques (categorie) doivent rester synchronisées avec src/data/rubriques.ts.
+
+media:
+  input: src/assets/photos
+  # Chemin écrit dans les fiches : relatif au fichier .md (src/content/procedures/)
+  # pour que l'optimisation d'images d'Astro fonctionne.
+  output: ../../assets/photos
+  rename: random
+  extensions: [jpg, jpeg, png, webp]
+
+settings:
+  commit:
+    identity: user
+
+content:
+  - name: procedures
+    label: Fiches
+    type: collection
+    path: src/content/procedures
+    format: yaml-frontmatter
+    filename:
+      template: "{fields.titre}.md"
+      field: create
+    view:
+      primary: titre
+      fields: [titre, categorie, public]
+      sort: [titre, categorie, date]
+      default:
+        sort: titre
+        order: asc
+    fields:
+      - name: titre
+        label: Titre
+        type: string
+        required: true
+        description: "Commence par un verbe : « Détartrer la machine à café »."
+
+      - name: categorie
+        label: Rubrique
+        type: select
+        required: true
+        options:
+          values:
+            - name: cuisine
+              label: Cuisine
+            - name: chauffage
+              label: Chauffage
+            - name: reseau
+              label: Réseau
+            - name: exterieur
+              label: Extérieur
+            - name: urgences
+              label: Urgences
+
+      - name: appareil
+        label: Appareil / lieu
+        type: string
+        description: "Modèle de l'appareil ou emplacement (facultatif)."
+
+      - name: public
+        label: Pour qui ?
+        type: select
+        required: true
+        default: tous
+        description: "« Adultes uniquement » masque la fiche dans la vue enfants."
+        options:
+          values:
+            - name: tous
+              label: Tout le monde
+            - name: adultes
+              label: Adultes uniquement
+
+      - name: duree
+        label: Durée
+        type: string
+        description: "Exemple : 15 min"
+
+      - name: photo_principale
+        label: Photo principale
+        type: image
+        description: "Photo de l'appareil, prise en format paysage de préférence."
+
+      - name: materiel
+        label: Matériel nécessaire
+        type: string
+        list: true
+
+      - name: avertissements
+        label: Avertissements
+        type: text
+        list: true
+        description: "Affichés dans l'encadré rouge « Attention »."
+
+      - name: etapes
+        label: Étapes
+        type: object
+        required: true
+        list:
+          collapsible:
+            collapsed: false
+            summary: "Étape {index} — {texte}"
+        fields:
+          - name: texte
+            label: Ce qu'il faut faire
+            type: text
+            required: true
+          - name: photo
+            label: Photo (facultatif)
+            type: image
+
+      - name: date
+        label: Date d'ajout
+        type: date
+        description: "Sert à trier les fiches « Ajoutées récemment »."
+
+      - name: body
+        label: Bon à savoir (facultatif)
+        type: rich-text
