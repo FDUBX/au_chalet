@@ -50,6 +50,8 @@ content:
               label: Réseau
             - name: exterieur
               label: Extérieur
+            - name: voitures
+              label: Voitures
             - name: urgences
               label: Urgences
 
