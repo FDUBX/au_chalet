@@ -41,6 +41,8 @@
   --wood-tint: #f0e3d2;
   --slate: #3b5466;
   --slate-tint: #dde3e8;
+  --stone: #4a5258;
+  --stone-tint: #e4e0d8;
 
   --switch-off: #d9d2c6;
   --shadow: 0 1px 3px rgb(0 0 0 / 0.12);
@@ -77,6 +79,8 @@
     --wood-tint: #3a2e22;
     --slate: #9db8cc;
     --slate-tint: #212d36;
+    --stone: #c4cbc6;
+    --stone-tint: #2a302d;
 
     --switch-off: #3a443f;
     --shadow: 0 1px 3px rgb(0 0 0 / 0.5);
@@ -88,6 +92,7 @@
 .tone-red    { --tone-bg: var(--red-tint);   --tone-fg: var(--red); }
 .tone-slate  { --tone-bg: var(--slate-tint); --tone-fg: var(--slate); }
 .tone-sapin  { --tone-bg: var(--sapin-tint); --tone-fg: var(--accent); }
+.tone-stone  { --tone-bg: var(--stone-tint); --tone-fg: var(--stone); }
 .tone-alert  { --tone-bg: var(--red-tint);   --tone-fg: var(--red); }
 
 /* Base ------------------------------------------------------------------- */

@@ -1,5 +1,6 @@
 # Configuration Pages CMS — https://pagescms.org/docs/
-# Les rubriques (categorie) doivent rester synchronisées avec src/data/rubriques.ts.
+# Les rubriques (categorie) doivent rester synchronisées avec src/data/rubriques.ts
+# (procédure : CLAUDE.md › « Ajouter une rubrique » ; catalogue des icônes : /icones/).
 
 media:
   input: src/assets/photos

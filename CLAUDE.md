@@ -40,6 +40,7 @@ src/
   content/procedures/*.md    # une fiche = un fichier (nom = slug de l'URL /p/<slug>/)
   assets/photos/             # photos uploadées par le CMS (optimisées au build)
   data/rubriques.ts          # rubriques : libellé, icône, ton couleur (source de vérité)
+  data/icons.ts              # tracés SVG des icônes (catalogue visuel : /icones/)
   data/site.ts               # nom du site, URL du CMS, numéro d'urgence
   lib/procedures.ts          # requêtes : tri, filtres, URLs
   components/                # Icon, Media, SiteHeader, Mountains, ProcedureRow, SiteFooter
@@ -62,7 +63,7 @@ public/_headers              # en-têtes Cloudflare (noindex, cache /_astro)
 | Champ | Type | Notes |
 |---|---|---|
 | `titre` | string, requis | Commence par un verbe |
-| `categorie` | enum, requis | `cuisine` `chauffage` `reseau` `exterieur` `urgences` |
+| `categorie` | enum, requis | `cuisine` `chauffage` `reseau` `exterieur` `voitures` `urgences` |
 | `appareil` | string | Modèle ou emplacement |
 | `public` | `tous` \| `adultes` | `adultes` = masqué dans la vue enfants |
 | `duree` | string | « 15 min » |
@@ -75,14 +76,29 @@ public/_headers              # en-têtes Cloudflare (noindex, cache /_astro)
 
 Le schéma tolère `""` et `null` (valeurs que le CMS peut écrire pour un champ vidé).
 **Toute modification du modèle doit être répercutée dans `content.config.ts` ET `.pages.yml`.**
-Ajouter une rubrique : `src/data/rubriques.ts` + options `categorie` de `.pages.yml`.
+
+## Ajouter une rubrique
+
+Catalogue visuel des icônes et tons : page `/icones/`.
+
+1. Icône absente du catalogue → l'ajouter dans `src/data/icons.ts` (contenu intérieur d'un SVG
+   Lucide, https://lucide.dev, licence ISC ; garder le style trait 2 px arrondi).
+2. `src/data/rubriques.ts` : ajouter le slug dans `RUBRIQUE_SLUGS` (ordre = ordre d'affichage,
+   `urgences` en dernier) et l'entrée `{ slug, label, sub, icon, tone }` dans `RUBRIQUES`.
+   Tons : `wood` `red` `slate` `sapin` `stone` (`alert` réservé à Urgences).
+3. `.pages.yml` → `categorie.options.values` : ajouter `{ name: <slug>, label: <Libellé> }`.
+4. Commit/push des trois changements ensemble.
+
+⚠️ Une option ajoutée dans `.pages.yml` sans entrée dans `rubriques.ts` passe inaperçue tant
+qu'aucune fiche ne l'utilise ; dès qu'une fiche la choisit, le build Cloudflare échoue et le site
+cesse d'être mis à jour (l'ancienne version reste en ligne).
 
 ## Charte « Chalet alpin »
 
 - Police unique : Nunito, graisses 600 → 900. Titres en 900.
 - Formes : rayons 22 px (cartes), 16 px (photos/vignettes), pilules 999 px. Pas d'ombres portées sauf boutons flottants.
 - Signature : bandeau montagne (`Mountains.astro`) en bas de chaque en-tête.
-- Icônes : trait 2 px, arrondies, `Icon.astro` uniquement (pas d'emoji).
+- Icônes : trait 2 px, arrondies, `Icon.astro` + `src/data/icons.ts` uniquement (pas d'emoji).
 - Couleurs : uniquement via les tokens de `global.css` (jamais de hex en dur dans les pages).
 
 | Token | Clair | Sombre |
@@ -94,6 +110,7 @@ Ajouter une rubrique : `src/data/rubriques.ts` + options `categorie` de `.pages.
 | `--header-bg` | `#23453A` | `#0E1613` |
 | `--red` | `#B23A2E` | `#D2574A` |
 | `--wood` / `--slate` | `#8A5A2B` / `#3B5466` | `#E0B887` / `#9DB8CC` |
+| `--stone` | `#4A5258` | `#C4CBC6` |
 
 Mode sombre **automatique** (`prefers-color-scheme`), pas de bouton. `.theme-light` force le
 clair (page d'impression des étiquettes). Les rubriques utilisent les classes `tone-*`

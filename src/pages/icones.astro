@@ -1,0 +1,64 @@
+---
+/** Catalogue des icônes et des tons disponibles, pour choisir ceux d'une nouvelle rubrique. */
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Icon from '../components/Icon.astro';
+import { ICONS, type IconName } from '../data/icons';
+import { RUBRIQUES, RUBRIQUE_SLUGS, type Tone } from '../data/rubriques';
+
+const names = Object.keys(ICONS) as IconName[];
+const used = new Map(RUBRIQUE_SLUGS.map((s) => [RUBRIQUES[s].icon, RUBRIQUES[s].label]));
+const tones: Tone[] = ['wood', 'red', 'slate', 'sapin', 'stone', 'alert'];
+---
+
+<Base title="Icônes">
+  <SiteHeader title="Icônes et couleurs" sub="Pour créer une nouvelle rubrique" back={{ href: '/', label: 'Accueil' }} />
+
+  <main class="page">
+    <div class="wrap stack">
+      <section class="stack-sm">
+        <h2 class="h2">Couleurs (tone)</h2>
+        <div class="grid-2">
+          {
+            tones.map((t) => (
+              <div class:list={['cat-card', `tone-${t}`]}>
+                <span class="badge">
+                  <Icon name="home" />
+                </span>
+                <code class="cat-name">{t}</code>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="stack-sm">
+        <h2 class="h2">Icônes (icon)</h2>
+        <div class="icon-grid">
+          {
+            names.map((n) => (
+              <div class="icon-cell tone-sapin">
+                <span class="badge">
+                  <Icon name={n} />
+                </span>
+                <code>{n}</code>
+                {used.has(n) && <span class="icon-used">{used.get(n)}</span>}
+              </div>
+            ))
+          }
+        </div>
+      </section>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .icon-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .icon-cell {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 14px 6px; text-align: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
+  }
+  .icon-cell code, .cat-name { font-size: 14px; font-weight: 800; }
+  .icon-used { font-size: 12px; font-weight: 700; color: var(--muted); }
+</style>
