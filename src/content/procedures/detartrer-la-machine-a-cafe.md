@@ -39,6 +39,5 @@ etapes:
   - texte: "Lorsque le réservoir à eau est vide, le voyant orange s’éteint et le
       détartrage est terminé. "
   - texte: Refaire un cycle de rinçage en faisant couler la machine sans café.
-  - texte: C'est Terminé !!!
 date: 2026-10-17
 ---
