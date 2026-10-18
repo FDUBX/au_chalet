@@ -14,7 +14,7 @@ export interface Rubrique {
  * Ordre d'affichage = ordre de ce tableau. Garder synchronisé avec .pages.yml
  * (champ `categorie`). Procédure d'ajout : voir CLAUDE.md › « Ajouter une rubrique ».
  */
-export const RUBRIQUE_SLUGS = ['cuisine', 'chauffage', 'reseau', 'exterieur', 'voitures', 'urgences'] as const;
+export const RUBRIQUE_SLUGS = ['cuisine', 'chauffage', 'reseau', 'exterieur', 'voitures', 'dev', 'urgences'] as const;
 export type RubriqueSlug = (typeof RUBRIQUE_SLUGS)[number];
 
 export const RUBRIQUES: Record<RubriqueSlug, Rubrique> = {
@@ -23,6 +23,7 @@ export const RUBRIQUES: Record<RubriqueSlug, Rubrique> = {
   reseau:    { slug: 'reseau',    label: 'Réseau',    sub: 'Box, Wi-Fi, télé',       icon: 'wifi',   tone: 'slate' },
   exterieur: { slug: 'exterieur', label: 'Extérieur', sub: 'Jardin, portail, neige', icon: 'tree',   tone: 'sapin' },
   voitures:  { slug: 'voitures',  label: 'Voitures',  sub: 'Entretien, pneus',       icon: 'car',    tone: 'stone' },
+  dev:       { slug: 'dev',       label: 'Dev',       sub: 'Faire évoluer le site',  icon: 'code',   tone: 'slate' },
   urgences:  { slug: 'urgences',  label: 'Urgences',  sub: 'Eau, électricité, gaz',  icon: 'alert',  tone: 'alert' },
 };
 

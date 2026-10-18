@@ -12,6 +12,10 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
+  markdown: {
+    // Pas de coloration Shiki (thème imposé) : les blocs de code suivent la charte via .prose.
+    syntaxHighlight: false,
+  },
   devToolbar: {
     enabled: false,
   },

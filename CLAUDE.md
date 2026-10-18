@@ -63,7 +63,7 @@ public/_headers              # en-têtes Cloudflare (noindex, cache /_astro)
 | Champ | Type | Notes |
 |---|---|---|
 | `titre` | string, requis | Commence par un verbe |
-| `categorie` | enum, requis | `cuisine` `chauffage` `reseau` `exterieur` `voitures` `urgences` |
+| `categorie` | enum, requis | `cuisine` `chauffage` `reseau` `exterieur` `voitures` `dev` `urgences` |
 | `appareil` | string | Modèle ou emplacement |
 | `public` | `tous` \| `adultes` | `adultes` = masqué dans la vue enfants |
 | `duree` | string | « 15 min » |

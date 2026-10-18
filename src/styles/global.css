@@ -347,6 +347,21 @@ a.kicker:hover { color: var(--header-ink); }
 .prose { font-size: 16px; font-weight: 600; color: var(--ink-soft); }
 .prose > :first-child { margin-top: 0; }
 .prose > :last-child { margin-bottom: 0; }
+.prose h3 { margin: 20px 0 8px; font-size: 17px; font-weight: 900; color: var(--ink); }
+.prose ul, .prose ol { padding-left: 20px; }
+.prose li + li { margin-top: 4px; }
+.prose code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.86em; font-weight: 600;
+  padding: 2px 6px; border-radius: 6px;
+  background: var(--bg); color: var(--ink);
+}
+.prose pre {
+  margin: 12px 0; padding: 14px 16px; overflow-x: auto;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 16px;
+  line-height: 1.5;
+}
+.prose pre code { padding: 0; background: none; font-size: 13px; white-space: pre; }
 
 /* Boutons ---------------------------------------------------------------- */
 .btn {

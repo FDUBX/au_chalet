@@ -53,6 +53,8 @@ content:
               label: Extérieur
             - name: voitures
               label: Voitures
+            - name: dev
+              label: Dev
             - name: urgences
               label: Urgences
 
