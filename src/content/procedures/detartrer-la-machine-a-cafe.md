@@ -32,10 +32,10 @@ etapes:
       l'eau fraîche. Sortez le réservoir à eau, videz-le et rincez-le à l’eau
       courante, le remplissez jusqu’au niveau MAX avec de l’eau fraîche et
       insérez le réservoir à eau dans la machine. "
-  - texte: "Manette vapeur sur la position Vapeur, presser la touche pour lancer le
-      rinçage. Durant le rinçage, pour nettoyer la douche chaudière, fermer de
-      temps en temps la manette vapeur pour faire sortir de petites quantités
-      d’eau de la douche chaudière. "
+  - texte: "Manette vapeur sur la position Vapeur, presser la touche Vapeur pour
+      lancer le rinçage. Durant le rinçage, pour nettoyer la douche chaudière,
+      fermer de temps en temps la manette vapeur pour faire sortir de petites
+      quantités d’eau de la douche chaudière. "
   - texte: "Lorsque le réservoir à eau est vide, le voyant orange s’éteint et le
       détartrage est terminé. "
   - texte: Refaire un cycle de rinçage en faisant couler la machine sans café.
