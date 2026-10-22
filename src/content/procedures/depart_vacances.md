@@ -14,6 +14,8 @@ etapes:
   - texte: Verifier que toutes les fenêtres et portes soient fermées
   - texte: Faire un tour du chalet pour derniere vérification
   - texte: Activer le mode Vacances sur home assistant
+  - texte: "Enlever les tapis et couvrir canapé "
+  - texte: Fermer les portes interieur
 date: 2026-10-22
 ---
 Bonne Vacances !!!
