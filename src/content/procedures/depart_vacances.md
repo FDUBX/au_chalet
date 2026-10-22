@@ -16,6 +16,7 @@ etapes:
   - texte: Activer le mode Vacances sur home assistant
   - texte: "Enlever les tapis et couvrir canapé "
   - texte: Fermer les portes interieur
+  - texte: "Fermer arrivée d'air poêle "
 date: 2026-10-22
 ---
 Bonne Vacances !!!
